@@ -17,7 +17,7 @@ class isotopes:
   @staticmethod
   def load():
     if(isotopes.loaded == False):
-      isotopes.d = pz.load(isotopes.path)
+      isotopes.d = pz.load(isotopes.path, 'lzma')
       isotopes.loaded = True
 
 
@@ -423,8 +423,14 @@ class isotopes:
     print()
    
 
+def main():
+  isotopes.test()
 
-isotopes.test()
+if __name__ == "__main__":
+    main()    
+
+
+
 
 
 

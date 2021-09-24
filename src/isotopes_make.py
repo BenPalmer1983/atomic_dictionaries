@@ -88,7 +88,7 @@ Isotope keys for each isotope:
     d['metastable_codes'] = isotopes_make.metastable_codes
     d['unstable_codes'] = isotopes_make.unstable_codes
 
-    pz.save(isotopes_make.dict_file, d)
+    pz.save(isotopes_make.dict_file, d, 'lzma')
 
 
     #print(isotopes_make.symbols)

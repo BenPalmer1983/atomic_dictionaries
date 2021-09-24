@@ -62,7 +62,7 @@ class elements_make:
         pass
     fh.close()
 
-    pz.save(elements_make.dict_file, d)
+    pz.save(elements_make.dict_file, d, 'lzma')
 
 
 elements_make.run()

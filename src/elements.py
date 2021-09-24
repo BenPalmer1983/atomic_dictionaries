@@ -13,7 +13,7 @@ class elements:
 
   def load():
     if(elements.loaded == False):
-      elements.d = pz.load(elements.path)
+      elements.d = pz.load(elements.path, 'lzma')
       elements.loaded = True
 
   def get(inp):
