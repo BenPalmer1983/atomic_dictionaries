@@ -30,7 +30,25 @@ elements.d
       ['period']
       ['group']
       ['phase']
-      ['description']
+      ['radioactive']
+      ['natural']
+      ['metal']
+      ['nonmetal']
+      ['metalloid']
+      ['type']
+      ['atomic_radius']
+      ['electronegativity']
+      ['first_ionization']
+      ['density']
+      ['melting_point']
+      ['boiling_point']
+      ['num_of_isotopes']
+      ['discoverer']
+      ['year']
+      ['specific_heat']
+      ['num_shells']
+      ['num_valence']
+      
 
 neutrons are included and have the symbol Nn
 
