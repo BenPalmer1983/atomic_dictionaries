@@ -17,20 +17,12 @@ class isotopes_make:
   data_source = {"JEFF 3.3 via NEA", "https://gist.github.com/GoodmanSciences/c2dd862cd38f21b0ad36b8f96b4bf1ee"}
   stable = {}
   unstable = {}
-  observationally_stable = {}
   symbols = {}
   isotopes = {}
   gammas = {}
   gammas_array = {}
   list = []
   list_tree = {}
-
-  valid_codes = []
-  stable_codes = []
-  unstable_codes = []
-  observationally_stable_codes = []
-
-  metastable_codes = []
 
   def run():
     d = {}
@@ -78,23 +70,16 @@ Isotope keys for each isotope:
     isotopes_make.load_symbols()
     isotopes_make.load_jeff()
 
-    d['isotopes'] = isotopes_make.isotopes
-    d['symbols'] = isotopes_make.symbols
-    d['stable'] = isotopes_make.stable
-    d['unstable'] = isotopes_make.unstable
-    d['observationally_stable'] = isotopes_make.observationally_stable
-    d['list'] = isotopes_make.list
-    d['list_tree'] = isotopes_make.list_tree
-    d['gammas'] = isotopes_make.gammas
-    d['gammas_array'] = isotopes_make.gammas_array
-    d['valid_codes'] = isotopes_make.valid_codes
-    d['stable_codes'] = isotopes_make.stable_codes
-    d['metastable_codes'] = isotopes_make.metastable_codes
-    d['unstable_codes'] = isotopes_make.unstable_codes
-    d['observationally_stable_codes'] = isotopes_make.observationally_stable_codes
+    d['isotopes'] =isotopes_make.isotopes
+    d['symbols'] =isotopes_make.symbols
+    d['stable'] =isotopes_make.stable
+    d['unstable'] =isotopes_make.unstable
+    d['list'] =isotopes_make.list
+    d['list_tree'] =isotopes_make.list_tree
+    d['gammas'] =isotopes_make.gammas
+    d['gammas_array'] =isotopes_make.gammas_array
 
-
-    pz.save(isotopes_make.dict_file, d, 'lzma')
+    pz.save(isotopes_make.dict_file, d)
 
 
     #print(isotopes_make.symbols)
@@ -162,7 +147,6 @@ Isotope keys for each isotope:
     'mass_to_neutron': None,
     'mass_amu': None,
     'half_life': None,
-    'decay_constant': None,
     'decay_modes': {},
     }
 
@@ -236,7 +220,7 @@ Isotope keys for each isotope:
           isotope['half_life_error'] = float(isotopes_make.read_float(l[1]))    
           a_points = int(l[4])
           a_rows = int(numpy.ceil(a_points / 6))
-          isotope['decay_constant'] = numpy.log(2) / isotope['half_life']
+          #print(row_num, a_points, a_rows)
     
         elif(a_rows > 0 and row_num == 3 + a_rows):
           isotope['spin_parity'] = float(isotopes_make.read_float(l[0]))   
@@ -259,11 +243,7 @@ Isotope keys for each isotope:
               #print(mode_text, to_p, to_n, to_meta, qvalue, branching_factor)
               
               to_key = to_meta * 1000000 + 1000 * to_p + (to_p + to_n)            
-              isotope['decay_modes'][to_key] = {}
-              isotope['decay_modes'][to_key]['branching_factor'] = branching_factor
-              isotope['decay_modes'][to_key]['to_meta'] = to_meta
-              isotope['decay_modes'][to_key]['qvalue'] = qvalue
-
+              isotope['decay_modes'][to_key] = [branching_factor, to_meta, qvalue]
          
         elif(row_num > 3 + a_rows + b_rows):
           try:
@@ -288,8 +268,8 @@ Isotope keys for each isotope:
                 l, mat, mf, mt, row_num = isotopes_make.read_row(blocks_457[n])
                 
                 # First row
-                energy = float(isotopes_make.read_float(l[0]))   # eV
-                d_energy = float(isotopes_make.read_float(l[1])) # eV
+                energy = float(isotopes_make.read_float(l[0])) * 1000 # eV
+                d_energy = float(isotopes_make.read_float(l[1])) * 1000 # eV
          
                 # Second row
                 n = n + 1
@@ -363,7 +343,9 @@ Isotope keys for each isotope:
     if(A not in isotopes_make.list_tree[Z].keys()):
       isotopes_make.list_tree[Z][A] = []  
     isotopes_make.list_tree[Z][A].append(M)
-    
+
+
+
     # Store Isotopes
     if(Z not in isotopes_make.isotopes.keys()):
       isotopes_make.isotopes[Z] = {}
@@ -383,14 +365,6 @@ Isotope keys for each isotope:
       if(A not in isotopes_make.unstable[Z]):
         isotopes_make.unstable[Z].append(A) 
 
-    # Observationally stable
-    if(isotope['stable'] or isotope['natural_abundance']>0.0):
-      if(Z not in isotopes_make.observationally_stable.keys()):
-        isotopes_make.observationally_stable[Z] = []
-      if(A not in isotopes_make.observationally_stable[Z]):
-        isotopes_make.observationally_stable[Z].append(A) 
-
-
 
     # Store Gammas
     if(Z not in isotopes_make.gammas.keys()):
@@ -405,20 +379,8 @@ Isotope keys for each isotope:
       isotopes_make.gammas_array[Z][A] = {}  
     isotopes_make.gammas_array[Z][A][M] = gammas_array
 
-    code = M * 1000000 + Z * 1000 + A 
-    if(code not in isotopes_make.valid_codes):
-      isotopes_make.valid_codes.append(code)
-    if(isotope['stable']):
-      if(code not in isotopes_make.stable_codes):
-        isotopes_make.stable_codes.append(code)
-    else:
-      if(code not in isotopes_make.unstable_codes):
-        isotopes_make.unstable_codes.append(code)
-    if(isotope['stable'] or isotope['natural_abundance']>0.0):
-      if(code not in isotopes_make.observationally_stable_codes):
-        isotopes_make.observationally_stable_codes.append(code)
-    if(isotope['metastable'] > 0):
-      isotopes_make.metastable_codes.append(code)
+
+
         
 
     #isotopes_make.isotopes
