@@ -28,7 +28,6 @@ class isotopes:
         exit() 
       if(isotopes.path[-2:] == 'pz'):
         h = isotopes.hash(isotopes.path)
-        print(h)
         if(h != 'c4a77e8e185a236c416c56bb3d46346e063d2c458284f36ad65b9076c7d8a93b'):
           print("Failed hash - isotopes.pz")
           exit() 
