@@ -1,6 +1,7 @@
 # Data source https://gist.github.com/GoodmanSciences/c2dd862cd38f21b0ad36b8f96b4bf1ee
 
 import numpy
+import os
 from pz import pz
 
 class elements:
@@ -16,7 +17,13 @@ class elements:
 
   @staticmethod
   def load():
-    if(elements.loaded == False):
+    if(elements.loaded == False):      
+      # If ELEMENTS set as environment variable, use this for path to file
+      if(os.environ.get('ELEMENTS') != None and os.path.isfile(os.environ.get('ELEMENTS'))):
+        elements.path = os.environ.get('ELEMENTS')
+      if(not os.path.isfile(elements.path)):
+        print("Isotope data file is not available.  Quitting.")
+        exit()
       elements.d = pz.load(elements.path, 'lzma')
       elements.loaded = True
 

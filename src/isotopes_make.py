@@ -4,7 +4,10 @@
 #
 
 import numpy
+import hashlib
 from pz import pz
+import pickle
+import _pickle as cPickle
 
 
 
@@ -13,7 +16,9 @@ class isotopes_make:
 
   element_file = "../data_files/elements.csv"
   jeff_file = "../data_files/JEFF33-rdd_all.asc"
-  dict_file = "../dictionaries/isotopes.pz"
+  dict_file_pz = "../dictionaries/isotopes.pz"
+  dict_file_p = "../dictionaries/isotopes.p"
+  hashes = "../dictionaries/hashes.txt"
   data_source = {"JEFF 3.3 via NEA", "https://gist.github.com/GoodmanSciences/c2dd862cd38f21b0ad36b8f96b4bf1ee"}
   stable = {}
   unstable = {}
@@ -94,11 +99,42 @@ Isotope keys for each isotope:
     d['observationally_stable_codes'] = isotopes_make.observationally_stable_codes
 
 
-    pz.save(isotopes_make.dict_file, d, 'lzma')
+    # Save as pickle
+    with open(isotopes_make.dict_file_p, 'wb') as f:
+      pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
+
+
+    # Save as pz
+    pz.save(isotopes_make.dict_file_pz, d, 'lzma')
+  
+
+    # Save hash
+    fh = open(isotopes_make.hashes, 'w')
+ 
+    phash = hashlib.sha256()
+    with open(isotopes_make.dict_file_p, 'rb') as f:
+      fb = f.read(1048576)
+      while len(fb) > 0:
+        phash.update(fb)
+        fb = f.read(1048576)
+
+    fh.write("Pickle:" + "\n")
+    fh.write(phash.hexdigest() + "\n")
+ 
+    pzhash = hashlib.sha256()
+    with open(isotopes_make.dict_file_pz, 'rb') as f:
+      fb = f.read(1048576)
+      while len(fb) > 0:
+        pzhash.update(fb)
+        fb = f.read(1048576)
+
+    fh.write("Pickle Zipped:" + "\n")
+    fh.write(pzhash.hexdigest() + "\n")
+    
+    fh.close()
 
 
     #print(isotopes_make.symbols)
-
     #isotopes_make.load_jeff(isotopes_make.data_file)
 
 
